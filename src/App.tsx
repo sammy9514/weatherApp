@@ -1,12 +1,27 @@
+import { useState } from "react";
+import { MdOutlineWbSunny } from "react-icons/md";
+import { IoMoonOutline } from "react-icons/io5";
+
 const App = () => {
+  const [toggle, setToggle] = useState(false);
+  const toggleTheme = () => {
+    document.documentElement.classList.toggle("dark");
+    setToggle(!toggle);
+  };
   return (
     <div>
-      <div className="w-full h-screen p-12">
-        <div className="w-full h-full bg-gray-300 flex">
+      <div
+        className={`w-full h-screen p-12  ${
+          toggle ? "dark:bg-[#21242d] dark:text-white" : "bg-white"
+        } `}
+      >
+        <div className="w-full h-full flex">
           <div className="w-[50%] h-full  p-8 flex items-center flex-col">
             <header className="flex justify-between w-full">
               <div>Weather App</div>
-              <div>Icon</div>
+              <button onClick={toggleTheme}>
+                {toggle ? <MdOutlineWbSunny /> : <IoMoonOutline />}
+              </button>
             </header>
             <div className="mt-[150px] w-[50%]">
               <h1 className="text-[80px] font-bold leading-20">
@@ -25,7 +40,11 @@ const App = () => {
               <div className="bg-[#2f727c] ">S</div>
             </div>
           </div>
-          <div className="w-[50%] h-full  p-8 flex items-center justify-center bg-[#dde4e6] relative text-white">
+          <div
+            className={`${
+              toggle ? "dark:bg-[#282b34]" : " bg-[#dde4e6]  text-white"
+            } w-[50%] h-full  p-8 flex items-center justify-center relative`}
+          >
             <div className="bg-amber-500 w-[500px] h-[670px] rounded-[30px] absolute top-30 right-40 rotate-7" />
             <div className="bg-[#2f727c] w-[500px] h-[650px] rounded-[30px] relative flex justify-cente items-center flex-col p-10 ">
               <h2 className="text-[25px] font-semibold ">Location</h2>
