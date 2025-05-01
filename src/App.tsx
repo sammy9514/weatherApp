@@ -1,13 +1,53 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineWbSunny } from "react-icons/md";
-import { IoMoonOutline } from "react-icons/io5";
+import { IoMoonOutline, IoSearchSharp } from "react-icons/io5";
+import { getLocation, getWeather } from "./api";
+interface WeatherData {
+  temp: number;
+  desc: string;
+}
 
 const App = () => {
   const [toggle, setToggle] = useState(false);
+  const [query, setQuery] = useState("Southampton");
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const toggleTheme = () => {
     document.documentElement.classList.toggle("dark");
     setToggle(!toggle);
   };
+
+  // getWeather()
+  //   .then((res: any) => {
+  //     console.log(res);
+  //   })
+  //   .catch((error: Error) => {
+  //     console.error(error);
+  //   });
+  // getLocation(location)
+  //   .then((res: any) => {
+  //     console.log(res);
+  //   })
+  //   .catch((error: Error) => {
+  //     console.error(error);
+  //   });
+
+  const handleSearch = async () => {
+    try {
+      const data = await getLocation(query);
+      console.log(data);
+      const { lat, lon } = data[0];
+
+      const weather = await getWeather({ lat, lon });
+      setWeatherData({
+        temp: weather.main.temp,
+        desc: weather.weather[0].description,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  console.log(weatherData?.desc);
   return (
     <div>
       <div
@@ -19,7 +59,7 @@ const App = () => {
           <div className="w-[50%] h-full  p-8 flex items-center flex-col">
             <header className="flex justify-between w-full">
               <div>Weather App</div>
-              <button onClick={toggleTheme}>
+              <button onClick={toggleTheme} className="text-[20px] ">
                 {toggle ? <MdOutlineWbSunny /> : <IoMoonOutline />}
               </button>
             </header>
@@ -36,8 +76,15 @@ const App = () => {
               <input
                 placeholder="Search location"
                 className="pl-2 pr-[30px] py-[10px] border border-[#2f727c] "
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
               />
-              <div className="bg-[#2f727c] ">S</div>
+              <div
+                className="bg-[#2f727c] text-[20px] p-3 rounded-full text-white "
+                onClick={handleSearch}
+              >
+                <IoSearchSharp />
+              </div>
             </div>
           </div>
           <div
@@ -47,16 +94,17 @@ const App = () => {
           >
             <div className="bg-amber-500 w-[500px] h-[670px] rounded-[30px] absolute top-30 right-40 rotate-7" />
             <div className="bg-[#2f727c] w-[500px] h-[650px] rounded-[30px] relative flex justify-cente items-center flex-col p-10 ">
-              <h2 className="text-[25px] font-semibold ">Location</h2>
+              <h2 className="text-[25px] font-semibold ">{query}</h2>
               <h2>Weather chances</h2>
               <div className="mt-11 text-[8rem] font-bold relative ">
                 {" "}
-                28<sup>°</sup>{" "}
+                {weatherData ? Math.round(weatherData.temp - 273) : 999}
+                <sup>°</sup>{" "}
               </div>
               {/* <div className="absolute text-[150px] top-42  ">⛈️</div> */}
               <div className="flex">
                 <div className="mt-20">
-                  <div className="text-[30px] ">⛈️</div>
+                  <div className="text-[30px] ">{weatherData?.desc}</div>
                   <p>2:00 AM</p>
                   <p className="text-[25px] font-semibold ">
                     32<sup>°</sup>
